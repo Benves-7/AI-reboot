@@ -12,7 +12,7 @@ class UnitManager(Manager):
 	unitList = []
 	
 	def Update():
-		for unit in BaseGameEntity.entities:
+		for unit in BaseGameUnit.entities:
 			unit.Update()
 
 	def addUnit(unit):
@@ -130,12 +130,13 @@ class EntityManager(Manager):
 
 	#returns a worker that isnt doing anything
 	def getIdle(type= "", profession= ""):
-		for id, unit in enumerate(BaseGameEntity.entities):
-			if unit.m_currentState == Idle():
+		for id, unit in enumerate(BaseGameUnit.entities):
+			if unit.currentState == Idle():
 				if type == "":
 					print("id: " + str(id) + " was found idle.     of type: " + str(type))
 					return unit
-				elif type == unit.type and profession == unit.profession:
+				elif type == unit.type: #and profession == unit.profession
+					print("id: " + str(id) + " was found idle.     of type: " + str(type))
 					return unit
 		if perf_counter() - EntityManager.idleCounter > 5:
 			EntityManager.idleCounter = perf_counter()
@@ -145,7 +146,7 @@ class EntityManager(Manager):
 		if EntityManager.needExplorers:
 			unit = EntityManager.getIdle("worker")
 			if unit:
-				unit.changeType("explorer")
+				unit.changeState(WUpgradeToExplorer)
 				EntityManager.explorers += 1
 
 		if EntityManager.needBuilders:

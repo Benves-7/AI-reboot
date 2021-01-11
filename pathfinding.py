@@ -1,8 +1,6 @@
-
-
-def BreadthFirst(mapHandle, start, goal):
-	goalIndex = goal.id
-	startIndex = start.id
+def BreadthFirst(start, goal):
+	goalIndex = goal
+	startIndex = start
 	frontier = Queue()
 	frontier.put(startIndex)
 	came_from = {}
@@ -10,7 +8,7 @@ def BreadthFirst(mapHandle, start, goal):
 
 	while not frontier.empty():
 		current = frontier.get()
-		for next in mapHandle.getNeighbours(current):
+		for next in MapHandle.getNeighbours(current):
 			if next not in came_from:
 				frontier.put(next)
 				came_from[next] = current
@@ -58,28 +56,26 @@ def AStar(map, width, heigth, window, start, goal = None):
 	came_from[startIndex] = True
 	timeBefore = perf_counter()
 	noMorePaths = False
-	if(goal == None):
 
-		while(1):
-
-			xRand = random.randint(-10, 10)
-			yRand = random.randint(-10,10)
-			goalIndex = startIndex + (xRand + width * yRand)
-			if((goalIndex > 0 and goalIndex < len(map) - 1) and (map[goalIndex].isWalkable) and not (goalIndex == startIndex)):
-				if(MapLoader.getDistance(map[startIndex], map[goalIndex]) > 50):
-					continue
+	#if(goal == None):
+	#	while(1):
+	#		xRand = random.randint(-10, 10)
+	#		yRand = random.randint(-10,10)
+	#		goalIndex = startIndex + (xRand + width * yRand)
+	#		if((goalIndex > 0 and goalIndex < len(map) - 1) and (map[goalIndex].isWalkable) and not (goalIndex == startIndex)):
+	#			if(MapLoader.getDistance(map[startIndex], map[goalIndex]) > 50):
+	#				continue
 				#window.drawNode(goalIndex, "red", map)
+	#			break
+	#		if(perf_counter() - timeBefore > 0.001):
+	#			return [startIndex]
 
-				break
-			if(perf_counter() - timeBefore > 0.001):
-				return [startIndex]
+	#if(perf_counter() - timeBefore > 0.01 or noMorePaths):
+	#	noMorePaths = True
+	#	return [-1]
 
-	if(perf_counter() - timeBefore > 0.01 or noMorePaths):
-		noMorePaths = True
-		return [-1]
 	openNodes.append(startIndex)
 	while len(openNodes) > 0:
-
 		current = MapLoader.getLowestFCost(openNodes, map)
 		openNodes.remove(current)
 		closedNodes.append(current)
@@ -141,6 +137,6 @@ def RandomSearch(map, width, heigth, window):
 			return path
 		
 from queue import Queue
-
+from config import *
 import random
 from time import perf_counter

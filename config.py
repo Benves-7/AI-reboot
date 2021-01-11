@@ -71,6 +71,40 @@ class MapHandle:
 			if node.id == townhallPos:
 				node.building = TownHall(townhallPos)
 
+	def getRandomNode(id):
+		break_counter = 0
+		while True:
+			ychange = randint(-5, 5)
+			xchange = randint(-5, 5)
+			newID = id + xchange + (ychange*MapHandle.width)
+			size = len(MapHandle.grid)
+
+			if newID in MapHandle.removedID or newID < 0 or newID > size or not MapHandle.grid[newID].isWalkable:
+				MapHandle.removedID.append(newID)
+				break_counter += 1
+			else:
+				return MapHandle.grid[newID]
+
+			if break_counter >= 10:
+				return False
+
+	def getNeighbours(id):
+		map = MapHandle.grid
+		width = MapHandle.width
+		neighbours = []
+		if(map[id - 1].isWalkable): #Left of
+			neighbours.append(id-1)
+		if(map[id - width].isWalkable): #Above
+			neighbours.append(id - width)
+		if(map[id + 1].isWalkable): #Right of
+			neighbours.append(id+1)
+		if(map[id + width].isWalkable): #Below
+			neighbours.append(id + width)
+		return neighbours
+
+	def searchForPath(start, end):
+		return BreadthFirst(start, end)
+
 # Class for holding data of individual squares.
 class Node:
 	isTree = False
@@ -88,13 +122,11 @@ class Node:
 		
 	width = 0
 	heigth = 0
-	pos = []
+	position = []
 	shape = None
 
 	def __init__(self, pos, size, type, tree, walkable, color, id, speed, FOW):
-		self.setPos(pos)
-		self.width = size[0]
-		self.heigth = size[1]
+		self.setPos(pos, size) # HAS TO BE CENTER OF NODE
 		self.type = type
 		self.isTree = tree
 		self.isWalkable = walkable
@@ -103,28 +135,27 @@ class Node:
 		self.moveSpeed = speed
 		self.fogOfWar = FOW
 
-		x1 = (self.x*self.width)
-		y1 = (self.y*self.heigth)
-
 		if GRAPHICS:
-			self.shape = Rectangle(Point(x1,y1), Point(x1+self.width, y1+self.heigth))
+			self.shape = Rectangle(Point(self.x - self.size[0]/2, self.y - self.size[1]/2), Point(self.x + self.size[0]/2, self.y + self.size[1]/2))
 			if (FOW and not self.type == "border"):
 				self.shape.setFill('gray50')
 			else:
 				self.shape.setFill(self.color)
-				self.shape.setOutline("")
 
-				self.shape.draw(WindowHandle.window)
+			self.shape.draw(WindowHandle.window)
 
 	def addTrees(self):
 		for x in range(0, 5):
 			pos = [uniform(self.x*self.width, (self.x+1)*self.width), uniform(self.y*self.heigth, (self.y+1)*self.heigth)]
 			self.trees.append(Tree(self, pos))
 
-	def setPos(self, pos):
-		self.pos = pos
-		self.x = pos[0]
-		self.y = pos[1]
+	def setPos(self, pos, size):
+		self.x			= pos[0] * size[0] + size[0]/2
+		self.y			= pos[1] * size[1] + size[1]/2
+		self.position	= [self.x, self.y] 
+		self.size   = size
+		self.width  = size[0]
+		self.heigth = size[1]
 
 # Class for holding info off a tree
 class Tree:

@@ -72,19 +72,22 @@ class WStart(State):
 		worker.changeState(Idle())
 	def Exit(self, worker):
 		pass
+
 class WUpgradeToExplorer(State):
 
-	def Enter(self, unit):
-		#print(str(unit.ID) + ": upgrading to explorer.")
+	def Enter(unit):
+		print(str(unit.ID) + ": upgrading to explorer.")
 		unit.startTime = perf_counter()
 		unit.doneWhen = config["upgradeTimes"]["explorer"]
 	
-	def Execute(self, unit):
+	def Execute(unit):
 		if perf_counter() - unit.startTime > unit.doneWhen:
-			unit.changeState(EStart())
+			unit.upgrade("e")
+			return
 
-	def Exit(self, unit):
+	def Exit(unit):
 		pass
+
 class WUpgradeToCraftsman(State):
 	def Enter(self, unit):
 		print(str(unit.ID) + " upgrading to craftsman.")
@@ -95,6 +98,7 @@ class WUpgradeToCraftsman(State):
 			unit.changeState(CStart())
 	def Exit(self, unit):
 		 pass
+
 class WCuttingTree(State):
 	def Enter(self, unit):
 		unit.startTime = perf_counter()
@@ -198,7 +202,7 @@ class EStart(State):
 
 class EExploring(State):
 	def Enter(self, unit):
-		unit.path = MapHandle.findExploration(unit)
+		unit.path = unit.findExploration()
 		if unit.path:
 			unit.path.pop(0)
 		else:
@@ -207,7 +211,7 @@ class EExploring(State):
 	def Execute(self, unit):
 		if len(unit.path) < 1:
 			unit.changeState(EWaiting())
-		elif unit.MoveTo():
+		elif unit.move():
 			unit.nodeId = unit.path[0]
 			unit.path.pop(0)
 			unit.exploreCloseNodes()

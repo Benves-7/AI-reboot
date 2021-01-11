@@ -50,7 +50,6 @@ class TrainingCamp():
 class TownHall():
 	nodeId = 0
 	position = []
-	center = []
 	centerPoint = None
 	charcoal = 0
 	trees = 0
@@ -60,21 +59,14 @@ class TownHall():
 
 	def __init__(self, nodeId):
 		TownHall.nodeId = nodeId
-		TownHall.position = MapHandle.grid[nodeId].pos.copy()
-		TownHall.center = TownHall.position.copy()
-		TownHall.center[0] = (TownHall.center[0] * MapHandle.nodeWidth) + (MapHandle.nodeWidth / 2)
-		TownHall.center[1] = (TownHall.center[1] * MapHandle.nodeHeight) + (MapHandle.nodeHeight / 2)
-		TownHall.position[0] = TownHall.position[0] * MapHandle.nodeWidth
-		TownHall.position[1] = TownHall.position[1] * MapHandle.nodeHeight
+		node = MapHandle.grid[nodeId]
+		TownHall.position = node.position.copy() # Center
 		pos = TownHall.position
-		size = [MapHandle.nodeWidth/10*9, MapHandle.nodeHeight/10*9]
+		size = [node.size[0]/10*8/2, node.size[1]/10*8/2]
 
-		TownHall.shape = Rectangle(Point(pos[0]+MapHandle.nodeWidth/10, pos[1]+MapHandle.nodeWidth/10), Point(pos[0]+MapHandle.nodeWidth/10+size[0], pos[1]+MapHandle.nodeWidth/10+size[1]))
+		TownHall.shape = Rectangle(Point(pos[0]-size[0], pos[1]-size[1]), Point(pos[0]+size[0], pos[1]+size[1]))
 		TownHall.shape.setFill("orange")
 		TownHall.shape.draw(WindowHandle.window)
-		TownHall.centerPoint = Point(TownHall.center[0], TownHall.center[1])
-		TownHall.centerPoint.setFill("black")
-		TownHall.centerPoint.draw(WindowHandle.window)
 
 from config import *
 from basegameentity import *

@@ -9,13 +9,15 @@ if __name__ == '__main__':
 	WindowHandle.createWindow()						# Create the window in configured size
 	MapHandle.createMap(loadFile("map.txt"))		# Create the map and place townhall
 
-	BaseGameEntity.create(25, "w");
-
+	for x in range(25):
+		Worker(x)
+	
 	while WindowHandle.window.isOpen():
-		ResourceManager.Update()
-		BuildingManager.Update()
-		EntityManager.Update()
 
+		ResourceManager.Update()
+		EntityManager.Update()
 		UnitManager.Update()
 
+
 		WindowHandle.update()
+		sleep(0.33)
